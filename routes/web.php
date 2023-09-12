@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 
 /*
+
 |--------------------------------------------------------------------------
 | Web Routes
 |--------------------------------------------------------------------------
@@ -14,5 +15,14 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::get('/', function () {
-    return view('welcome');
+    return view('main.main');
+});
+
+Route::get('contact', function () {
+    $contact = [
+        'name' => 'Polytec',
+        'address' => 'B.Semenovskaya 38',
+        'phone' => '8(495)432-3232'
+    ];
+    return view('main.contact', ['data'=> $contact]);
 });
