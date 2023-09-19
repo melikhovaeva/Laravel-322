@@ -52,7 +52,9 @@
     </nav>
     </header>
     <main>
-      @yield('content')
+      <div>
+        @yield('content')
+      </div>
     </main>
     <footer>
 
