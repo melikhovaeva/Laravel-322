@@ -52,8 +52,10 @@
     <h5 class="card-title">{{$comment->title}}</h5>
     <h6 class="card-subtitle mb-2 text-muted">{{$comment->text}}</h6>
     <div class="flex">
+      @can('comment', $comment)
       <a class="btn btn-primary btn-sm mr-1" href="/comment/edit/{{$comment->id}}" class="card-link">Edit comment</a>
       <a class="btn btn-secondary btn-sm mr-1" href="/comment/delete/{{$comment->id}}" class="card-link">Delete comment</a>
+      @endcan
     </div> 
   </div>
 </div>
