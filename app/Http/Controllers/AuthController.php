@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use Illiminate\Support\Fasad\Auth;
+use Illuminate\Support\Facades\Auth;
 use App\Models\User;
 use Hash;
 
@@ -17,7 +17,7 @@ class AuthController extends Controller
     public function registr(Request $request){
         $request->validate([
             'name'=>'required',
-            'email' => 'required|email|unique:App\Models\User, email',
+            'email' => 'required|email|unique:App\Models\User',
             'password'=>'required|min:6'
         ]);
 
@@ -40,7 +40,7 @@ class AuthController extends Controller
         return view('auth.login');
     }
 
-    public function customLogin(){
+    public function customLogin(Request $request){
         $credentials = $request->validate([
             'email' => 'required|email',
             'password'=>'required|min:6'
@@ -51,7 +51,7 @@ class AuthController extends Controller
             return redirect()->intended('/');
         }
 
-        return back()->withError([
+        return back()->withErrors([
             'email' => 'error email',
             'password' => 'error password',
         ]);
