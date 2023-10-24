@@ -18,6 +18,13 @@
 
 <div class="center card-header">
   <h3 class="text-center">Comments</h3>
+  @isset($_GET['res'])
+  @if($_GET['res'] == 1)
+  <div class="alert alert-success text-center">
+    <p>Ваш комментарий успешно создан. Отправлен на модерацию</p>
+  </div>
+  @endif
+  @endisset
   <div class="card-body">
     @if ($errors->any())
       <div class="alert alert-danger">

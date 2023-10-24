@@ -5,27 +5,56 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Comment;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Notification;
+use Illuminate\Support\Facades\Log;
+use App\Mail\AdminComment;
+use App\Models\Article;
+use App\Models\User;
+use App\Notification\CommentNotifi;
 
 class CommentController extends Controller
 {
     public function index() {
-        $comments = Comment::latest()->paginate(10);
+        $comments = Comment::latest()
+                    ->paginate(10);
         return view('comments.index', ['comments'=>$comments]);
     }
+
+    public function accept(int $id){
+        $comment = Comment::findOrFail($id);
+        $comment->accept = true;
+        $comment->save();
+        return redirect('/comment');
+    }
+
+    public function reject(int $id){
+        $comment = Comment::findOrFail($id);
+        $comment->accept = false;
+        $comment->save();
+        return redirect('/comment');
+    }
+
     public function store(Request $request){
         $request->validate([
             'title' => 'required',
             'text' => 'required',
             'article_id' => 'required'
         ]);
-
+        $article = Article::findOrFail($request->article_id);
         $comment = new Comment;
         $comment->title = $request->title;
         $comment->text = $request->text;
         $comment->article_id = $request->article_id;
         $comment->user()->associate(auth()->user());
-        $comment->save();
-        return redirect()->route('article.show', ['article' => $comment->article_id]);
+        $res = $comment->save();
+        $users = User::where('id', "!=", auth()->id())->get();
+        Log::alert($users);
+        if($res){
+            Mail::to('evamatina1547@gmail.com')->send(new AdminComment($comment->text, $article->name));
+            Notification::send($users, new CommentNotifi($comment));
+        }
+        return redirect()->route('article.show', ['article' => $comment->article_id, 'res'=>$res]);
     }
 
     public function edit($id) {
