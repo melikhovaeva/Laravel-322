@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\Log;
 use App\Mail\AdminComment;
 use App\Models\Article;
 use App\Models\User;
-use App\Notification\CommentNotifi;
+use App\Notifications\CommentNotifi;
 
 class CommentController extends Controller
 {
@@ -22,9 +22,13 @@ class CommentController extends Controller
     }
 
     public function accept(int $id){
+        $users = User::where('id', "!=", $comment->author_id)->get();
+        Log::alert($users);
         $comment = Comment::findOrFail($id);
+        $article = Article::findOrFail($comment->article_id);
         $comment->accept = true;
         $comment->save();
+        Notification::send($users, new CommentNotifi($article));
         return redirect('/comment');
     }
 
@@ -52,7 +56,6 @@ class CommentController extends Controller
         Log::alert($users);
         if($res){
             Mail::to('evamatina1547@gmail.com')->send(new AdminComment($comment->text, $article->name));
-            Notification::send($users, new CommentNotifi($comment));
         }
         return redirect()->route('article.show', ['article' => $comment->article_id, 'res'=>$res]);
     }

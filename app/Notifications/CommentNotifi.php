@@ -6,7 +6,7 @@ use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
-use App\Models\Comment;
+use App\Models\Article;
 
 class CommentNotifi extends Notification
 {
@@ -18,10 +18,10 @@ class CommentNotifi extends Notification
      * @return void
      */
 
-    protected $comment;
-    public function __construct(Article $comment)
+    protected $article;
+    public function __construct(Article $article)
     {
-        $this->article = $comment;
+        $this->article = $article;
     }
 
     /**
@@ -44,7 +44,7 @@ class CommentNotifi extends Notification
     public function toDataBase($notifiable)
     {
         return [
-            'comment' => $this->comment->title,
+            'article' => $this->article,
         ];
         // return (new MailMessage)
         //             ->line('The introduction to the notification.')
@@ -61,7 +61,7 @@ class CommentNotifi extends Notification
     public function toArray($notifiable)
     {
         return [
-            //
+            //через верековещательное 
         ];
     }
 }
