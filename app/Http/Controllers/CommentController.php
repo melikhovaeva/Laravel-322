@@ -8,6 +8,8 @@ use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Cache;
 use App\Mail\AdminComment;
 use App\Models\Article;
 use App\Models\User;
@@ -22,10 +24,16 @@ class CommentController extends Controller
     }
 
     public function accept(int $id){
+        $comment = Comment::findOrFail($id);
         $users = User::where('id', "!=", $comment->author_id)->get();
         Log::alert($users);
-        $comment = Comment::findOrFail($id);
         $article = Article::findOrFail($comment->article_id);
+
+        $caches = DB::table('cache')->whereRaw('`key` GLOB :key', [':key'=>'article/*[0-9]:[0-9]'])->get();
+        foreach($caches as $cache) {
+            Cache::forget($cache->key);
+        }
+
         $comment->accept = true;
         $comment->save();
         Notification::send($users, new CommentNotifi($article));
