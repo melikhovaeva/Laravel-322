@@ -75,6 +75,11 @@ class CommentController extends Controller
     }
 
     public function update($id, Request $request){
+        $caches = DB::table('cache')->whereRaw('`key` GLOB :key', [':key'=>'article/*[0-9]:[0-9]'])->get();
+        foreach($caches as $cache) {
+            Cache::forget($cache->key);
+        }
+        
         $request->validate([
             'title' => 'required',
             'text' => 'required',
@@ -88,6 +93,11 @@ class CommentController extends Controller
     }
 
     public function delete($id) {
+        $caches = DB::table('cache')->whereRaw('`key` GLOB :key', [':key'=>'article/*[0-9]:[0-9]'])->get();
+        foreach($caches as $cache) {
+            Cache::forget($cache->key);
+        }
+
         $comment = Comment::findOrFail($id);
         Gate::authorize('comment', $comment);
         $comment->delete();
